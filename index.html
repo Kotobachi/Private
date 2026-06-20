@@ -3,121 +3,711 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>父の日カード</title>
+  <title>Father's Day Card</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      height: 100vh;
-      background: linear-gradient(#fff7d6, #ffe6e6);
-      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+      min-height: 100vh;
       overflow: hidden;
+      font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(255, 236, 174, 0.55), transparent 30%),
+        linear-gradient(160deg, #fffaf0, #fff0dd 45%, #fff8dc);
+      color: #5c4534;
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
     }
 
-    .card {
-      background: white;
-      padding: 32px 24px;
-      border-radius: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    .scene {
+      width: min(92vw, 430px);
+      min-height: 680px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .soft-card {
+      width: 100%;
+      min-height: 600px;
+      position: relative;
+      border-radius: 34px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(10px);
+      box-shadow:
+        0 18px 40px rgba(160, 110, 70, 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.75);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .soft-card::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 28px;
+      border: 2px dashed rgba(244, 177, 98, 0.45);
+      pointer-events: none;
+    }
+
+    .soft-card::after {
+      content: "";
+      position: absolute;
+      width: 160%;
+      height: 160%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,0.8) 0 2px, transparent 3px);
+      background-size: 22px 22px;
+      opacity: 0.25;
+      transform: rotate(-10deg);
+      pointer-events: none;
+    }
+
+    .map-stage,
+    .bouquet-stage,
+    .message-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.98);
+    }
+
+    .map-wrap {
+      width: 86%;
       max-width: 340px;
-      animation: fadeIn 1.5s ease;
+      text-align: center;
+      position: relative;
     }
 
-    h1 {
-      color: #5c4033;
-      font-size: 28px;
+    .map-title {
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      color: #8b6a4f;
+      margin-bottom: 18px;
     }
 
-    p {
-      color: #5c4033;
-      line-height: 1.8;
-      font-size: 16px;
+    .map {
+      width: 100%;
+      height: 330px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.45);
+      position: relative;
+      box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.7);
+      overflow: hidden;
     }
 
-    button {
-      margin-top: 16px;
-      padding: 12px 20px;
-      border: none;
+    .japan-line {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .city {
+      position: absolute;
+      font-size: 13px;
+      color: #7b6048;
+      background: rgba(255, 255, 255, 0.65);
+      padding: 6px 10px;
       border-radius: 999px;
-      background: #f7b267;
-      color: white;
-      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(120, 80, 50, 0.1);
+    }
+
+    .sendai {
+      top: 78px;
+      right: 72px;
+    }
+
+    .chiba {
+      bottom: 86px;
+      right: 58px;
+    }
+
+    .parcel {
+      position: absolute;
+      top: 108px;
+      right: 82px;
+      width: 62px;
+      height: 48px;
       cursor: pointer;
+      animation: deliver 3.2s ease-in-out forwards, boxFloat 1.8s ease-in-out infinite 3.3s;
+      filter: drop-shadow(0 8px 12px rgba(139, 91, 45, 0.16));
     }
 
-    .message {
-      display: none;
-      margin-top: 20px;
-      animation: fadeIn 1s ease;
+    .box {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #c99554, #e1b06f);
+      border: 2px solid rgba(127, 83, 38, 0.22);
+      position: relative;
     }
 
-    .flower {
-      position: fixed;
-      top: -40px;
-      font-size: 24px;
-      animation: fall linear infinite;
+    .box::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 10px;
+      height: 100%;
+      background: rgba(255, 232, 180, 0.55);
+      transform: translateX(-50%);
     }
 
-    @keyframes fall {
-      to {
-        transform: translateY(110vh) rotate(360deg);
+    .box::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 232, 180, 0.5);
+    }
+
+    .tap-box {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #9a7555;
+      animation: blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes deliver {
+      0% {
+        top: 108px;
+        right: 82px;
+        transform: scale(0.88) rotate(-8deg);
+      }
+      60% {
+        top: 188px;
+        right: 84px;
+        transform: scale(1.02) rotate(5deg);
+      }
+      100% {
+        top: 214px;
+        right: 74px;
+        transform: scale(1) rotate(0);
       }
     }
 
-    @keyframes fadeIn {
+    @keyframes boxFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 0.45;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .bouquet-wrap {
+      position: relative;
+      width: 310px;
+      height: 430px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      animation: bouquetIn 1s ease forwards;
+    }
+
+    .bouquet-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 18px 24px rgba(134, 95, 52, 0.13));
+    }
+
+    .double-tap-ui {
+      position: absolute;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%);
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.74);
+      color: #9b6a3d;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      box-shadow: 0 8px 20px rgba(180, 120, 70, 0.14);
+      animation: pulse 1.8s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes bouquetIn {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px) scale(0.94);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
-    .photo {
-      font-size: 54px;
-      margin-bottom: 8px;
+    @keyframes pulse {
+      0%, 100% {
+        transform: translateX(-50%) scale(1);
+      }
+      50% {
+        transform: translateX(-50%) scale(1.05);
+      }
+    }
+
+    .message-card {
+      width: 86%;
+      max-width: 330px;
+      min-height: 430px;
+      border-radius: 30px;
+      background:
+        linear-gradient(rgba(255,255,255,0.72), rgba(255,250,240,0.82)),
+        radial-gradient(circle at 20% 10%, rgba(255, 230, 150, 0.35), transparent 35%);
+      box-shadow:
+        0 18px 36px rgba(150, 94, 45, 0.17),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.85);
+      padding: 34px 28px;
+      position: relative;
+      text-align: center;
+      animation: messageIn 1s ease forwards;
+    }
+
+    .message-card::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 24px;
+      border: 1.8px dotted rgba(235, 159, 74, 0.45);
+      pointer-events: none;
+    }
+
+    .message-card::after {
+      content: "Father's Day";
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(158, 110, 66, 0.45);
+      letter-spacing: 0.15em;
+    }
+
+    .message-card h1 {
+      margin: 8px 0 24px;
+      font-size: 25px;
+      color: #6e4b32;
+      font-weight: 700;
+    }
+
+    .message-card p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 2.05;
+      color: #6d5542;
+    }
+
+    .ribbon-line {
+      width: 120px;
+      height: 18px;
+      margin: 0 auto 18px;
+      position: relative;
+    }
+
+    .ribbon-line::before,
+    .ribbon-line::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      width: 54px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(239, 157, 70, 0.55);
+    }
+
+    .ribbon-line::before {
+      left: 0;
+    }
+
+    .ribbon-line::after {
+      right: 0;
+    }
+
+    .ribbon-dot {
+      width: 14px;
+      height: 14px;
+      background: rgba(239, 157, 70, 0.72);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 0 6px rgba(239, 157, 70, 0.12);
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .petal {
+      position: fixed;
+      top: -40px;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.75;
+      animation-name: fallPetal;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    .sunflower-petal {
+      width: 13px;
+      height: 24px;
+      background: radial-gradient(circle at 50% 28%, #ffe990, #f4bd36 70%);
+      border-radius: 80% 80% 65% 65%;
+      transform-origin: center;
+    }
+
+    .rose-petal {
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle at 35% 30%, #fff5a8, #f0c849 75%);
+      border-radius: 70% 30% 70% 35%;
+      transform-origin: center;
+    }
+
+    @keyframes fallPetal {
+      0% {
+        transform: translateY(-50px) translateX(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(55vh) translateX(32px) rotate(180deg);
+      }
+      100% {
+        transform: translateY(110vh) translateX(-22px) rotate(360deg);
+      }
+    }
+
+    @media (max-height: 700px) {
+      .scene {
+        min-height: 100vh;
+      }
+
+      .soft-card {
+        min-height: 560px;
+      }
+
+      .bouquet-wrap {
+        width: 280px;
+        height: 390px;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="card">
-    <div class="photo">🌻</div>
-    <h1>お父さんへ</h1>
-    <p>今日は父の日なので、<br>ちょっとだけ特別なカードを作りました。</p>
-    <button onclick="showMessage()">開いてみて</button>
 
-    <div class="message" id="message">
-      <p>
-        いつもありがとう。<br>
-        普段あんまりちゃんと言わないけど、<br>
-        すごく感謝しています。<br><br>
-        これからも元気でいてね。
-      </p>
-      <h2>Happy Father's Day 🌻</h2>
+<body>
+  <div class="scene">
+    <div class="soft-card">
+
+      <section class="map-stage" id="mapStage">
+        <div class="map-wrap">
+          <div class="map-title">仙台から千葉へ、小さな贈りもの</div>
+
+          <div class="map">
+            <svg class="japan-line" viewBox="0 0 340 330" aria-hidden="true">
+              <path
+                d="M205 45 C245 80, 250 125, 235 162 C220 200, 245 230, 220 285"
+                fill="none"
+                stroke="rgba(226, 174, 96, 0.48)"
+                stroke-width="22"
+                stroke-linecap="round"
+              />
+              <path
+                d="M205 45 C245 80, 250 125, 235 162 C220 200, 245 230, 220 285"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.72)"
+                stroke-width="10"
+                stroke-linecap="round"
+              />
+              <path
+                d="M220 88 C185 108, 178 150, 196 180"
+                fill="none"
+                stroke="rgba(226, 174, 96, 0.28)"
+                stroke-width="18"
+                stroke-linecap="round"
+              />
+            </svg>
+
+            <div class="city sendai">仙台</div>
+            <div class="city chiba">千葉</div>
+
+            <div class="parcel" id="parcel" title="クリックして開ける">
+              <div class="box"></div>
+            </div>
+          </div>
+
+          <div class="tap-box">段ボールをクリックしてね</div>
+        </div>
+      </section>
+
+      <section class="bouquet-stage hidden" id="bouquetStage">
+        <div class="bouquet-wrap" id="bouquet">
+          <svg class="bouquet-svg" viewBox="0 0 320 450" aria-label="ひまわりと黄色いバラの花束">
+            <defs>
+              <radialGradient id="sunPetal" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#fff6a8"/>
+                <stop offset="100%" stop-color="#efb434"/>
+              </radialGradient>
+
+              <radialGradient id="roseGrad" cx="35%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#fff8bf"/>
+                <stop offset="100%" stop-color="#eec848"/>
+              </radialGradient>
+
+              <linearGradient id="paperGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92"/>
+                <stop offset="100%" stop-color="#fff6e8" stop-opacity="0.82"/>
+              </linearGradient>
+
+              <linearGradient id="ribbonGrad" x1="0" x2="1">
+                <stop offset="0%" stop-color="#f6a650"/>
+                <stop offset="100%" stop-color="#e9833a"/>
+              </linearGradient>
+
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#b77b40" flood-opacity="0.18"/>
+              </filter>
+            </defs>
+
+            <!-- stems -->
+            <g stroke="#83a96d" stroke-width="5" stroke-linecap="round" opacity="0.8">
+              <path d="M160 335 C145 250, 115 180, 90 105"/>
+              <path d="M160 335 C155 245, 160 160, 162 78"/>
+              <path d="M160 335 C175 255, 210 190, 235 115"/>
+              <path d="M160 335 C135 260, 120 210, 130 135"/>
+              <path d="M160 335 C188 260, 198 220, 190 145"/>
+            </g>
+
+            <!-- leaves -->
+            <g fill="#a6c48a" opacity="0.65">
+              <path d="M132 235 C96 220, 92 190, 128 202 C148 209, 151 228, 132 235"/>
+              <path d="M193 244 C226 222, 235 195, 202 202 C181 207, 178 231, 193 244"/>
+              <path d="M145 286 C116 280, 105 254, 136 259 C154 262, 160 280, 145 286"/>
+            </g>
+
+            <!-- sunflower function-like groups -->
+            <g filter="url(#softShadow)">
+              <!-- sunflower left -->
+              <g transform="translate(88 105)">
+                <g fill="url(#sunPetal)">
+                  <ellipse rx="10" ry="25" transform="rotate(0) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(30) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(60) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(90) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(120) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(150) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(180) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(210) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(240) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(270) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(300) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(330) translate(0 -32)"/>
+                </g>
+                <circle r="20" fill="#8a5a2d"/>
+                <circle r="11" fill="#6d4424" opacity="0.9"/>
+              </g>
+
+              <!-- sunflower center -->
+              <g transform="translate(163 78) scale(1.08)">
+                <g fill="url(#sunPetal)">
+                  <ellipse rx="10" ry="25" transform="rotate(0) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(30) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(60) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(90) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(120) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(150) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(180) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(210) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(240) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(270) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(300) translate(0 -32)"/>
+                  <ellipse rx="10" ry="25" transform="rotate(330) translate(0 -32)"/>
+                </g>
+                <circle r="20" fill="#8a5a2d"/>
+                <circle r="11" fill="#6d4424" opacity="0.9"/>
+              </g>
+            </g>
+
+            <!-- yellow roses -->
+            <g filter="url(#softShadow)">
+              <g transform="translate(235 116)">
+                <circle r="34" fill="url(#roseGrad)" opacity="0.95"/>
+                <path d="M-18 -2 C-10 -24, 15 -22, 16 -3 C10 -13, -7 -14, -18 -2" fill="#fff2a0" opacity="0.8"/>
+                <path d="M-20 8 C-5 -7, 18 -5, 23 13 C8 4, -8 3, -20 8" fill="#e3b735" opacity="0.72"/>
+                <path d="M-5 22 C-12 3, 4 -12, 18 -1 C6 1, 1 10, -5 22" fill="#f7d95b" opacity="0.85"/>
+              </g>
+
+              <g transform="translate(130 140) scale(0.9)">
+                <circle r="32" fill="url(#roseGrad)" opacity="0.95"/>
+                <path d="M-17 -2 C-8 -23, 14 -20, 15 -3 C9 -12, -6 -13, -17 -2" fill="#fff2a0" opacity="0.8"/>
+                <path d="M-20 8 C-5 -7, 18 -5, 23 13 C8 4, -8 3, -20 8" fill="#e3b735" opacity="0.72"/>
+                <path d="M-5 22 C-12 3, 4 -12, 18 -1 C6 1, 1 10, -5 22" fill="#f7d95b" opacity="0.85"/>
+              </g>
+
+              <g transform="translate(190 150) scale(0.82)">
+                <circle r="32" fill="url(#roseGrad)" opacity="0.95"/>
+                <path d="M-17 -2 C-8 -23, 14 -20, 15 -3 C9 -12, -6 -13, -17 -2" fill="#fff2a0" opacity="0.8"/>
+                <path d="M-20 8 C-5 -7, 18 -5, 23 13 C8 4, -8 3, -20 8" fill="#e3b735" opacity="0.72"/>
+                <path d="M-5 22 C-12 3, 4 -12, 18 -1 C6 1, 1 10, -5 22" fill="#f7d95b" opacity="0.85"/>
+              </g>
+            </g>
+
+            <!-- wrapping paper -->
+            <g>
+              <path
+                d="M75 195 C105 230, 125 280, 158 372 C118 345, 78 295, 52 225 Z"
+                fill="url(#paperGrad)"
+                stroke="rgba(230, 210, 185, 0.8)"
+                stroke-width="2"
+              />
+              <path
+                d="M245 195 C215 230, 195 280, 162 372 C202 345, 242 295, 268 225 Z"
+                fill="url(#paperGrad)"
+                stroke="rgba(230, 210, 185, 0.8)"
+                stroke-width="2"
+              />
+              <path
+                d="M72 210 C110 252, 128 300, 160 392 C192 300, 210 252, 248 210 C213 238, 108 238, 72 210 Z"
+                fill="rgba(255,255,255,0.82)"
+                stroke="rgba(230, 210, 185, 0.75)"
+                stroke-width="2"
+              />
+            </g>
+
+            <!-- orange ribbon -->
+            <g transform="translate(160 310)">
+              <path d="M0 0 C-35 -24, -70 -18, -80 8 C-46 18, -20 14, 0 0" fill="url(#ribbonGrad)" opacity="0.92"/>
+              <path d="M0 0 C35 -24, 70 -18, 80 8 C46 18, 20 14, 0 0" fill="url(#ribbonGrad)" opacity="0.92"/>
+              <circle r="18" fill="#ee9144"/>
+              <path d="M-13 38 C-4 20, 8 20, 18 38 L8 72 L-4 44 L-18 72 Z" fill="#e77f37" opacity="0.9"/>
+            </g>
+          </svg>
+
+          <div class="double-tap-ui">花束をダブルクリックしてね</div>
+        </div>
+      </section>
+
+      <section class="message-stage hidden" id="messageStage">
+        <div class="message-card">
+          <div class="ribbon-line">
+            <div class="ribbon-dot"></div>
+          </div>
+
+          <h1>お父さんへ</h1>
+
+          <p>
+            いつもありがとう<br>
+            今年のカードはHTMLで書いてみたよ<br>
+            私は元気に過ごしてます<br>
+            また夏に会えるの楽しみにしてるね<br>
+            最近暑いけど<br>
+            体調には気をつけて
+          </p>
+        </div>
+      </section>
+
     </div>
   </div>
 
   <script>
+    const mapStage = document.getElementById("mapStage");
+    const bouquetStage = document.getElementById("bouquetStage");
+    const messageStage = document.getElementById("messageStage");
+    const parcel = document.getElementById("parcel");
+    const bouquet = document.getElementById("bouquet");
+
+    let lastTapTime = 0;
+
+    parcel.addEventListener("click", () => {
+      mapStage.classList.add("hidden");
+
+      setTimeout(() => {
+        bouquetStage.classList.remove("hidden");
+      }, 450);
+    });
+
+    bouquet.addEventListener("dblclick", showMessage);
+
+    bouquet.addEventListener("touchend", () => {
+      const now = Date.now();
+
+      if (now - lastTapTime < 420) {
+        showMessage();
+      }
+
+      lastTapTime = now;
+    });
+
     function showMessage() {
-      document.getElementById("message").style.display = "block";
+      bouquetStage.classList.add("hidden");
+
+      setTimeout(() => {
+        messageStage.classList.remove("hidden");
+      }, 450);
     }
 
-    const flowers = ["🌻", "🌼", "💛", "🍀"];
+    function createPetal() {
+      const petal = document.createElement("div");
+      const isSunflower = Math.random() > 0.45;
 
-    for (let i = 0; i < 25; i++) {
-      const flower = document.createElement("div");
-      flower.className = "flower";
-      flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
-      flower.style.left = Math.random() * 100 + "vw";
-      flower.style.animationDuration = 4 + Math.random() * 5 + "s";
-      flower.style.animationDelay = Math.random() * 5 + "s";
-      document.body.appendChild(flower);
+      petal.className = "petal " + (isSunflower ? "sunflower-petal" : "rose-petal");
+      petal.style.left = Math.random() * 100 + "vw";
+      petal.style.animationDuration = 6 + Math.random() * 6 + "s";
+      petal.style.animationDelay = Math.random() * 4 + "s";
+      petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+      petal.style.opacity = 0.45 + Math.random() * 0.35;
+
+      document.body.appendChild(petal);
+
+      setTimeout(() => {
+        petal.remove();
+      }, 12000);
     }
+
+    for (let i = 0; i < 24; i++) {
+      createPetal();
+    }
+
+    setInterval(createPetal, 700);
   </script>
 </body>
 </html>
