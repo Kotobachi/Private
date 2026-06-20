@@ -147,8 +147,8 @@
 
     .pin {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 5.6%;
+      aspect-ratio: 1 / 1;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
       background: linear-gradient(180deg, #ffaf63, #ef8b42);
@@ -159,31 +159,32 @@
     .pin::after {
       content: "";
       position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 8px;
-      height: 8px;
+      top: 30%;
+      left: 30%;
+      width: 40%;
+      height: 40%;
       border-radius: 50%;
       background: rgba(255,255,255,0.9);
     }
 
-    /* デフォルメ地図上の位置 */
+    /* デフォルメ地図上の仙台・千葉。
+       位置を微調整したい場合はここを少し動かす */
     .pin-sendai {
-      left: 248px;
-      top: 142px;
+      left: 71.7%;
+      top: 28.8%;
     }
 
     .pin-chiba {
-      left: 269px;
-      top: 257px;
+      left: 76.8%;
+      top: 52.0%;
     }
 
     .travel-gift {
       position: absolute;
-      width: 34px;
-      height: 34px;
-      left: 242px;
-      top: 138px;
+      width: 8.8%;
+      aspect-ratio: 1 / 1;
+      left: 69.8%;
+      top: 27.8%;
       z-index: 4;
       pointer-events: none;
       filter: drop-shadow(0 6px 8px rgba(110, 78, 45, 0.16));
@@ -237,7 +238,6 @@
 
     .ripple {
       position: absolute;
-      inset: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -327,13 +327,13 @@
       z-index: 3;
     }
 
+    /* 花束のリボン付近に波紋を配置 */
     .bouquet-click {
-      position: absolute;
       left: 50%;
-      bottom: 82px;
+      top: 63%;
       width: 150px;
       height: 150px;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       pointer-events: none;
     }
 
@@ -428,6 +428,10 @@
 
       .map-sequence {
         inset: 60px 16px 16px;
+      }
+
+      .bouquet-click {
+        top: 64%;
       }
     }
   </style>
@@ -597,14 +601,14 @@
     const cardStage = document.getElementById("cardStage");
     const petalLayer = document.getElementById("petalLayer");
 
-    let lastTapTime = 0;
     let openedCard = false;
     let petalsStarted = false;
 
     // 地図上のスタート(仙台)とゴール(千葉)
-    const startPoint = { x: 242, y: 138 };
-    const endPoint   = { x: 266, y: 252 };
-    const controlPoint = { x: 292, y: 205 };
+    // %指定なので、スマホ/iPadで比率が変わってもズレにくい
+    const startPoint = { x: 69.8, y: 27.8 };
+    const endPoint   = { x: 75.0, y: 50.5 };
+    const controlPoint = { x: 82.0, y: 39.5 };
 
     // 地図アニメ開始
     setTimeout(() => {
@@ -627,8 +631,8 @@
         const x = quadraticBezier(startPoint.x, controlPoint.x, endPoint.x, eased);
         const y = quadraticBezier(startPoint.y, controlPoint.y, endPoint.y, eased);
 
-        travelGift.style.left = x + "px";
-        travelGift.style.top = y + "px";
+        travelGift.style.left = x + "%";
+        travelGift.style.top = y + "%";
 
         if (t < 1) {
           requestAnimationFrame(step);
@@ -657,7 +661,7 @@
       }, 420);
     });
 
-    // 花束ダブルクリック/ダブルタップ -> カード
+    // 花束クリック/タップ -> カード
     function openCardStage() {
       if (openedCard) return;
       openedCard = true;
@@ -670,17 +674,8 @@
       }, 420);
     }
 
-    bouquetWrap.addEventListener("dblclick", openCardStage);
-
-    bouquetWrap.addEventListener("touchend", () => {
-      const now = Date.now();
-
-      if (now - lastTapTime < 380) {
-        openCardStage();
-      }
-
-      lastTapTime = now;
-    });
+    bouquetWrap.addEventListener("click", openCardStage);
+    bouquetWrap.addEventListener("touchend", openCardStage);
 
     function createPetal() {
       const petal = document.createElement("div");
